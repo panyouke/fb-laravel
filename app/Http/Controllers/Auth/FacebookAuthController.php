@@ -14,8 +14,9 @@ class FacebookAuthController extends Controller
     {
         return Socialite::driver('facebook')
             ->stateless()
-            ->setScopes([])              // 不请求 email
-            ->fields(['id', 'name'])     // 只取 id 和 name
+            ->with([
+                'config_id' => env('FACEBOOK_CONFIG_ID'),
+            ])
             ->redirect();
     }
 
