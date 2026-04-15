@@ -13,37 +13,41 @@ class FacebookAuthController extends Controller
     public function redirect()
     {
         return Socialite::driver('facebook')
-            ->scopes(['email'])
+            ->stateless()
+            ->setScopes([])              // 不请求 email
+            ->fields(['id', 'name'])     // 只取 id 和 name
             ->redirect();
     }
 
     public function callback()
     {
-        $facebookUser = Socialite::driver('facebook')->user();
+        $facebookUser = Socialite::driver('facebook')
+            ->stateless()
+            ->setScopes([])
+            ->fields(['id', 'name'])
+            ->user();
 
-        $user = User::query()->where('facebook_id', $facebookUser->getId())->first();
-
-        if (! $user && $facebookUser->getEmail()) {
-            $user = User::query()->where('email', $facebookUser->getEmail())->first();
-        }
+        $user = User::query()
+            ->where('facebook_id', $facebookUser->getId())
+            ->first();
 
         if (! $user) {
             $user = User::create([
                 'name' => $facebookUser->getName() ?: 'Facebook User',
-                'email' => $facebookUser->getEmail(),
+                // 不拿 email，就给一个占位邮箱，避免数据库 not null / unique 问题
+                'email' => 'fb_' . $facebookUser->getId() . '@malapan.local',
                 'facebook_id' => $facebookUser->getId(),
                 'password' => bcrypt(Str::random(32)),
             ]);
         } else {
-            $user->facebook_id = $facebookUser->getId();
-            if (! $user->email && $facebookUser->getEmail()) {
-                $user->email = $facebookUser->getEmail();
+            if (! $user->facebook_id) {
+                $user->facebook_id = $facebookUser->getId();
+                $user->save();
             }
-            $user->save();
         }
 
         Auth::login($user);
 
-        return redirect()->route('login');
+        return redirect('/');
     }
 }
