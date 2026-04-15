@@ -14,8 +14,12 @@ class FacebookAuthController extends Controller
     {
         return Socialite::driver('facebook')
             ->stateless()
-            ->with([
-                'config_id' => '1708686646786988',
+            ->setScopes([
+                'public_profile',
+                'email',
+                'pages_show_list',
+                'pages_read_engagement',
+                'business_management'
             ])
             ->redirect();
     }
