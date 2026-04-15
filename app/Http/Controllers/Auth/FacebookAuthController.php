@@ -15,7 +15,7 @@ class FacebookAuthController extends Controller
         return Socialite::driver('facebook')
             ->stateless()
             ->with([
-                'config_id' => env('FACEBOOK_CONFIG_ID'),
+                'config_id' => '1708686646786988',
             ])
             ->redirect();
     }
