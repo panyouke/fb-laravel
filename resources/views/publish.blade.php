@@ -36,10 +36,10 @@
 
     <div class="form-group">
         <label>选择公共主页:</label><br>
-        <select name="page_data" required style="padding: 5px; width: 300px;">
+        <select name="page_id" required>
             <option value="">请选择你要发帖的主页</option>
             @foreach($userPages as $page)
-                <option value="{{ $page['id'] }}|{{ $page['access_token'] }}">
+                <option value="{{ $page['id'] }}">
                     {{ $page['name'] }}
                 </option>
             @endforeach

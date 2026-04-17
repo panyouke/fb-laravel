@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -90,8 +91,14 @@ class FacebookAuthController extends Controller
 
                 // 【建议操作】：把 $pageId 和 $pageAccessToken 存入你的数据库
                 // ...
+                foreach ($pages as $page) {
+                    $redisKey = "fb:page:token:{$page['id']}";
+                    Redis::setex($redisKey, 2592000, $page['access_token']);
+                }
 
-                dd('成功获取主页 Token！', $firstPage);
+                // 存完后跳转回发帖页面
+                return redirect('/facebook/page/publish')->with('success', '所有主页授权已更新，可以开始发帖了！');
+//                dd('成功获取主页 Token！', $firstPage);
             } else {
                 return redirect('/')->with('error', '该用户没有管理任何公共主页');
             }

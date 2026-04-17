@@ -5,62 +5,68 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis; // ⚠️ 引入 Redis 门面
 
 class testSendMsg extends Controller
 {
+    protected $guzzle;
+
+    // ⚠️ 别忘了构造函数注入 Guzzle
+    public function __construct(Client $guzzle)
+    {
+        $this->guzzle = $guzzle;
+    }
 
     // 1. 显示表单页面
     public function showForm()
     {
-        // 这里模拟你从数据库或 API 拿到主页列表
-        // 实际开发中，你应该从数据库查出当前登录用户绑定的主页列表
+        // 模拟数据：现在只需要给前端 id 和 name，不需要暴露 token 了
         $userPages = [
             [
-                'id' => '1121873197667743',
+                'id'   => '1121873197667743',
                 'name' => '我的测试主页',
-                'access_token' => 'EAARuKPMrodgBRFhjsmox8DA1gHh924vsHzIn3HfmCZCx3hxh83VV6rZA7CzW7Aec8hW8SuQpk3B6geMadHkChHuRqKmbLbplxqU2zPBUOpWYgIVrUZB4Tbx4ox4MqvyZBhVvRPKZBH28ZBKReUQ6LfstcV9tfDa'
             ]
         ];
 
-        // 渲染 blade 模板，并把数据传过去
+        // 渲染 blade 模板
         return view('publish', compact('userPages'));
     }
 
     // 2. 接收表单提交
     public function sendPost(Request $request)
     {
-        // 验证前端传来的数据
+        // 1. 验证数据：现在只接收 page_id 和 message
         $request->validate([
-            'page_data' => 'required|string',
-            'message'   => 'required|string|max:2000',
+            'page_id' => 'required|string',
+            'message' => 'required|string|max:2000',
         ]);
 
-        // 解析前端传过来的 ID 和 Token (通过 | 分割)
-        $pageData = explode('|', $request->input('page_data'));
-
-        if (count($pageData) !== 2) {
-            return back()->with('error', '主页数据格式不正确');
-        }
-
-        $pageId = $pageData[0];
-        $pageAccessToken = $pageData[1];
+        $pageId = $request->input('page_id');
         $message = $request->input('message');
 
+        // 2. 核心：直接去 Redis 里面捞 Token！
+        $redisKey = "fb:page:token:{$pageId}";
+        $pageAccessToken = Redis::get($redisKey);
+
+        // 3. 拦截检查：如果在 Redis 没找到，说明没授权或者过期了
+        if (!$pageAccessToken) {
+            return back()->with('error', '主页授权已过期或未找到，请重新点击 Facebook 登录授权。');
+        }
+
         try {
-            // 调用发帖方法
+            // 4. 拿着取出来的 Token 去发帖
             $result = $this->publishToPage($pageId, $pageAccessToken, $message);
 
-            // ⚠️ 成功后，重定向回之前的页面，并带上成功提示
+            // 成功后返回
             return back()->with('success', '帖子发布成功！新帖子的 ID 是: ' . ($result['id'] ?? '未知'));
 
         } catch (\Exception $e) {
             Log::error('发布主页帖子失败: ' . $e->getMessage());
-            // 失败后，重定向回之前的页面，并带上错误提示
             return back()->with('error', '发布失败：' . $e->getMessage());
         }
     }
 
-    // 3. 实际调用 Facebook API (保持不变)
+    // 3. 实际调用 Facebook API (完全保持不变)
     protected function publishToPage($pageId, $pageAccessToken, $message)
     {
         $response = $this->guzzle->post("https://graph.facebook.com/v19.0/{$pageId}/feed", [
