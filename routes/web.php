@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\FacebookAuthController;
+use App\Http\Controllers\testSendMsg;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -17,6 +18,12 @@ Route::get('/auth/facebook/redirect', [FacebookAuthController::class, 'redirect'
 
 Route::get('/auth/facebook/callback', [FacebookAuthController::class, 'callback'])
     ->name('facebook.callback');
+
+// 1. 显示发帖表单的页面
+Route::get('/facebook/page/publish', [testSendMsg::class, 'showForm'])->name('facebook.page.show');
+
+// 2. 接收表单提交并处理发帖
+Route::post('/facebook/page/publish', [testSendMsg::class, 'sendPost'])->name('facebook.page.publish');
 
 Route::prefix('auth')->middleware(['crosstttp'])->group(function () {
     // 不需要登录
