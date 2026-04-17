@@ -19,8 +19,11 @@ class FacebookAuthController extends Controller
                 'email',
                 'pages_show_list',
                 'pages_read_engagement',
-                'business_management'
+                'business_management',
+                'ads_read',
+                'ads_management'
             ])
+            ->with(['auth_type' => 'rerequest'])
             ->redirect();
     }
 
