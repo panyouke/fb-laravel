@@ -68,7 +68,11 @@ class FacebookAuthController extends Controller
             ]
         ]);
 
-        $adAccounts = $response->json('data') ?? [];
+        $body = $response->getBody()->getContents();
+
+        $data = json_decode($body, true);
+
+        $adAccounts = $data['data'] ?? [];
 
         if (count($adAccounts) > 0) {
             // 3. 如果有广告账户，取出第一个（或者根据你的业务逻辑选一个）
