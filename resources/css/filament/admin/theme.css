@@ -1,0 +1,29 @@
+/* 左侧侧边栏变窄 */
+.fi-sidebar {
+    width: 14rem !important;
+}
+
+/* 主内容区域跟着缩进 */
+.fi-main {
+    margin-inline-start: 14rem !important;
+}
+
+/* 顶部栏也跟着侧边栏宽度走 */
+.fi-topbar {
+    inset-inline-start: 14rem !important;
+}
+
+/* 折叠状态下可按需再调 */
+@media (max-width: 1024px) {
+    .fi-sidebar {
+        width: 16rem !important;
+    }
+
+    .fi-main {
+        margin-inline-start: 0 !important;
+    }
+
+    .fi-topbar {
+        inset-inline-start: 0 !important;
+    }
+}
