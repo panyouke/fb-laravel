@@ -8,12 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class testSendMsg extends Controller
 {
-    protected $guzzle;
-
-    public function __construct(Client $guzzle)
-    {
-        $this->guzzle = $guzzle;
-    }
 
     // 1. 显示表单页面
     public function showForm()
@@ -22,9 +16,9 @@ class testSendMsg extends Controller
         // 实际开发中，你应该从数据库查出当前登录用户绑定的主页列表
         $userPages = [
             [
-                'id' => '你的真实_PAGE_ID',
+                'id' => '1121873197667743',
                 'name' => '我的测试主页',
-                'access_token' => '你的真实_PAGE_ACCESS_TOKEN'
+                'access_token' => 'EAARuKPMrodgBRFhjsmox8DA1gHh924vsHzIn3HfmCZCx3hxh83VV6rZA7CzW7Aec8hW8SuQpk3B6geMadHkChHuRqKmbLbplxqU2zPBUOpWYgIVrUZB4Tbx4ox4MqvyZBhVvRPKZBH28ZBKReUQ6LfstcV9tfDa'
             ]
         ];
 
