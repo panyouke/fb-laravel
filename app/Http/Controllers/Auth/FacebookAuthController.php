@@ -97,8 +97,8 @@ class FacebookAuthController extends Controller
                 }
 
                 // 存完后跳转回发帖页面
-                return redirect('/facebook/page/publish')->with('success', '所有主页授权已更新，可以开始发帖了！');
-//                dd('成功获取主页 Token！', $firstPage);
+//                return redirect('/facebook/page/publish')->with('success', '所有主页授权已更新，可以开始发帖了！');
+                dd('成功获取主页 Token！', $pageId, $pageAccessToken);
             } else {
                 return redirect('/')->with('error', '该用户没有管理任何公共主页');
             }

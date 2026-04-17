@@ -47,7 +47,8 @@ class testSendMsg extends Controller
         // 2. 核心：直接去 Redis 里面捞 Token！
         $redisKey = "fb:page:token:{$pageId}";
         $pageAccessToken = Redis::get($redisKey);
-
+        var_dump($redisKey);
+        var_dump($pageAccessToken);
         // 3. 拦截检查：如果在 Redis 没找到，说明没授权或者过期了
         if (!$pageAccessToken) {
             return back()->with('error', '主页授权已过期或未找到，请重新点击 Facebook 登录授权。');
