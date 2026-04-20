@@ -23,9 +23,9 @@ class FacebookAuthController extends Controller
                 'business_management',
                 'ads_read',
                 'ads_management',
-//                'pages_show_list',       // 必须：显示用户管理的主页列表
-//                'pages_read_engagement', // 读取主页数据（阅读帖子等）
-                'pages_manage_posts',    // 核心：允许你的应用帮主页发帖！
+                'pages_manage_posts',
+                'pages_read_user_content',
+                'catalog_management',
             ])
             ->with(['auth_type' => 'rerequest'])
             ->redirect();

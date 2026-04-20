@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis; // ⚠️ 引入 Redis 门面
 
-class testSendMsg extends Controller
+class TestSendMsg extends Controller
 {
-    protected $guzzle;
-
-    // ⚠️ 别忘了构造函数注入 Guzzle
-    public function __construct(Client $guzzle)
-    {
-        $this->guzzle = $guzzle;
-    }
 
     // 1. 显示表单页面
     public function showForm()
@@ -56,7 +50,7 @@ class testSendMsg extends Controller
 
         try {
             // 4. 拿着取出来的 Token 去发帖
-            $result = $this->publishToPage($pageId, $pageAccessToken, $message);
+            $result = $this->publishPost($pageId, $pageAccessToken, $message);
 
             // 成功后返回
             return back()->with('success', '帖子发布成功！新帖子的 ID 是: ' . ($result['id'] ?? '未知'));
@@ -67,16 +61,39 @@ class testSendMsg extends Controller
         }
     }
 
-    // 3. 实际调用 Facebook API (完全保持不变)
-    protected function publishToPage($pageId, $pageAccessToken, $message)
+    /**
+     * 发布帖子（支持纯文字或图文）
+     */
+    protected function publishPost($pageId, $pageAccessToken, $message, $imageUrl = null)
     {
-        $response = $this->guzzle->post("https://graph.facebook.com/v19.0/{$pageId}/feed", [
-            'form_params' => [
-                'message'      => $message,
-                'access_token' => $pageAccessToken
-            ]
-        ]);
+        try {
+            $endpoint = $imageUrl
+                ? "https://graph.facebook.com/v19.0/{$pageId}/photos"
+                : "https://graph.facebook.com/v19.0/{$pageId}/feed";
+            $params = [
+                'access_token' => $pageAccessToken,
+            ];
+            if ($imageUrl) {
+                $params['url'] = $imageUrl;
+                $params['caption'] = $message;
+            } else {
+                $params['message'] = $message;
+            }
+            $response = $this->guzzle->post($endpoint, [
+                'form_params' => $params,
+                'timeout'     => 15,
+            ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+            return json_decode($response->getBody()->getContents(), true);
+
+        } catch (ClientException $e) {
+            $error = json_decode($e->getResponse()->getBody()->getContents(), true);
+            Log::error("FB发布失败", ['error' => $error, 'page_id' => $pageId]);
+            return $error;
+        } catch (\Exception $e) {
+            Log::error("FB系统错误: " . $e->getMessage());
+            return ['error' => $e->getMessage()];
+        }
     }
+
 }
