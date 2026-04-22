@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('admin_users', function (Blueprint $table) {
-            //
-            $table->string('phone')->index('')->after('');
-        });
+//        Schema::table('admin_users', function (Blueprint $table) {
+//            //
+//            $table->string('phone')->index('')->after('');
+//        });
     }
 
     /**

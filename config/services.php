@@ -39,5 +39,7 @@ return [
         'client_id' => env('FACEBOOK_CLIENT_ID'),
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
         'redirect' => env('APP_URL') . env('FACEBOOK_REDIRECT_URI'),
+        'business_id'   => env('FACEBOOK_BUSINESS_ID'),
+        'api_version'   => env('FACEBOOK_API_VERSION'),
     ],
 ];

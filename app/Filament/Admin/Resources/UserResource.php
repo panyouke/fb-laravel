@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Clusters\UserList;
+//use App\Filament\Admin\Clusters\UserList;
 use App\Filament\Admin\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms\Form;
@@ -17,11 +17,13 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $cluster = UserList::class;
+//    protected static ?string $cluster = UserList::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
-    protected static ?string $navigationLabel = '用户';
+    protected static ?string $navigationGroup = '账号管理';
+
+    protected static ?string $navigationLabel = '用户列表';
 
     protected static ?string $modelLabel = '用户';
 
