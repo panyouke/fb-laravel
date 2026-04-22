@@ -114,20 +114,18 @@ class FbBusiness extends Controller
             'email' => 'required|email',
             'role' => 'required|in:ADMIN,EMPLOYEE',
         ]);
-        $pageId = '1121873197667743';
+
         // 1. 根据前端传的数据库 ID 找到对应的 BM 记录
-//        $bm = \App\Models\FbBms::findOrFail($request->bm_internal_id);
-//
-//        // 2. 检查是否有 Token
-//        if (!$bm->manager_token) {
-//            return back()->with('error', '该 BM 记录缺少管理 Token，请先在后台配置。');
-//        }
-        $redisKey = "fb:page:token:{$pageId}";
-        $pageAccessToken = Redis::get($redisKey);
+        $bm = \App\Models\FbBms::findOrFail($request->bm_internal_id);
+
+        // 2. 检查是否有 Token
+        if (!$bm->manager_token) {
+            return back()->with('error', '该 BM 记录缺少管理 Token，请先在后台配置。');
+        }
 
         // 3. 调用你已经写好的 API 请求方法
         $result = $this->inviteUserToBm(
-            $pageAccessToken,
+            $bm->manager_token,
             $request->email,
             $request->role
         );
