@@ -114,9 +114,10 @@ class FbBusiness extends Controller
             'email' => 'required|email',
             'role' => 'required|in:ADMIN,EMPLOYEE',
         ]);
-
+        var_dump($request->bm_internal_id);
+        $id = 1;
         // 1. 根据前端传的数据库 ID 找到对应的 BM 记录
-        $bm = \App\Models\FbBms::findOrFail($request->bm_internal_id);
+        $bm = \App\Models\FbBms::findOrFail($id);
 
         // 2. 检查是否有 Token
         if (!$bm->manager_token) {
