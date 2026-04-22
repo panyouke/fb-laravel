@@ -116,7 +116,6 @@ class FbBusiness extends Controller
         ]);
         // 1. 根据前端传的数据库 ID 找到对应的 BM 记录
         $bm = \App\Models\FbBms::findOrFail((int)$request->bm_internal_id);
-
         // 2. 检查是否有 Token
         if (!$bm->manager_token) {
             return back()->with('error', '该 BM 记录缺少管理 Token，请先在后台配置。');
@@ -145,7 +144,7 @@ class FbBusiness extends Controller
         $version = config('services.facebook.api_version');
         $businessId = config('services.facebook.business_id');
 
-        $uri = "https://graph.facebook.com/{$version}/{$businessId}/invites";
+        $uri = "https://graph.facebook.com/{$version}/{$businessId}/business_users";
 
         try {
             $response = $this->guzzle->post($uri, [
