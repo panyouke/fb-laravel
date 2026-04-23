@@ -10,7 +10,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis; // ⚠️ 引入 Redis 门面
 
-class FbBusiness extends Controller
+class FbBusinessController extends Controller
 {
 
     // 1. 显示表单页面

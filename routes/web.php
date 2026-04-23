@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Controllers\FbBusinessController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\FacebookAuthController;
-use App\Http\Controllers\FbBusiness;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -20,14 +20,14 @@ Route::get('/auth/facebook/callback', [FacebookAuthController::class, 'callback'
     ->name('facebook.callback');
 
 // 1. 显示发帖表单的页面
-Route::get('/facebook/page/publish', [FbBusiness::class, 'showForm'])->name('facebook.page.show');
+Route::get('/facebook/page/publish', [FbBusinessController::class, 'showForm'])->name('facebook.page.show');
 
 // 2. 接收表单提交并处理发帖
-Route::post('/facebook/page/publish', [FbBusiness::class, 'sendPost'])->name('facebook.page.publish');
+Route::post('/facebook/page/publish', [FbBusinessController::class, 'sendPost'])->name('facebook.page.publish');
 
-Route::get('/invite', [FbBusiness::class, 'showInviteForm'])->name('facebook.page.showInviteForm');
+Route::get('/invite', [FbBusinessController::class, 'showInviteForm'])->name('facebook.page.showInviteForm');
 
-Route::post('/invite', [FbBusiness::class, 'processInvite'])->name('facebook.page.processInvite');
+Route::post('/invite', [FbBusinessController::class, 'processInvite'])->name('facebook.page.processInvite');
 
 Route::prefix('auth')->middleware(['crosstttp'])->group(function () {
     // 不需要登录
