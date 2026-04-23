@@ -8,7 +8,7 @@ class FbBms extends Model
 {
     // app/Models/FbBm.php
     protected $casts = [
-        'manager_token' => 'encrypted',
+//        'manager_token' => 'encrypted',
         'app_secret' => 'encrypted',
     ];
 

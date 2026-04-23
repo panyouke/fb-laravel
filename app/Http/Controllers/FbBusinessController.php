@@ -113,10 +113,7 @@ class FbBusinessController extends Controller
             'email' => 'required|email',
             'role' => 'required|in:ADMIN,EMPLOYEE',
         ]);
-        var_dump($request->bm_internal_id);
         $bm = FbBms::findOrFail((int)$request->bm_internal_id);
-        var_dump($bm);
-        var_dump($bm->manager_token);
         if (!$bm->manager_token) {
             return back()->with('error', '该 BM 记录缺少管理 Token，请先在后台配置。');
         }
