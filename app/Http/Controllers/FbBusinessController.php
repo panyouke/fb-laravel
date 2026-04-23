@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FbBms;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
@@ -100,41 +101,34 @@ class FbBusinessController extends Controller
     public function showInviteForm()
     {
         // 从数据库捞出你之前创建的 fb_bms 表里的所有记录
-        $bms = \App\Models\FbBms::whereNull('deleted_at')->get();
+        $bms = FbBms::whereNull('deleted_at')->get();
 
         return view('invite', compact('bms'));
     }
 
-    // 3. 处理邀请表单提交
     public function processInvite(Request $request)
     {
-        // 基础验证
         $request->validate([
             'bm_internal_id' => 'required|exists:fb_bms,id',
             'email' => 'required|email',
             'role' => 'required|in:ADMIN,EMPLOYEE',
         ]);
-        // 1. 根据前端传的数据库 ID 找到对应的 BM 记录
-        $bm = \App\Models\FbBms::findOrFail((int)$request->bm_internal_id);
-        // 2. 检查是否有 Token
+        var_dump($request->bm_internal_id);
+        $bm = FbBms::findOrFail((int)$request->bm_internal_id);
         if (!$bm->manager_token) {
             return back()->with('error', '该 BM 记录缺少管理 Token，请先在后台配置。');
         }
 
-        // 3. 调用你已经写好的 API 请求方法
         $result = $this->inviteUserToBm(
             $bm->manager_token,
             $request->email,
             $request->role
         );
 
-        // 4. 判断结果
-        // 注意：Facebook 成功的响应结构可能在 'id' 或 'data' 里
         if (isset($result['id']) || isset($result['data'])) {
             return back()->with('success', "邀请已成功发送至：{$request->email}");
         }
 
-        // 如果失败，尝试提取 FB 给出的具体错误原因
         $errorMsg = $result['error']['message'] ?? '未知错误，请检查日志';
         return back()->with('error', '发送失败：' . $errorMsg);
     }
