@@ -138,7 +138,6 @@ class FbBusinessController extends Controller
         $businessId = config('services.facebook.business_id');
 
         $uri = "https://graph.facebook.com/{$version}/{$businessId}/business_users";
-        dd($businessId, $uri);
         try {
             $response = $this->guzzle->post($uri, [
                 'form_params' => [
@@ -150,7 +149,11 @@ class FbBusinessController extends Controller
             ]);
 
             $data = json_decode($response->getBody()->getContents(), true);
-
+            dd([
+                'success' => true,
+                'status'  => $response->getStatusCode(),
+                'body'    => $response->getBody()->getContents(),
+            ]);
             // Facebook 成功返回通常包含 invite ID
             if (isset($data['data']) || isset($data['id'])) {
                 return $data;
