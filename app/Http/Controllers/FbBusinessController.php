@@ -138,7 +138,7 @@ class FbBusinessController extends Controller
         $businessId = config('services.facebook.business_id');
 
         $uri = "https://graph.facebook.com/{$version}/{$businessId}/business_users";
-
+        dd($businessId, $uri);
         try {
             $response = $this->guzzle->post($uri, [
                 'form_params' => [
