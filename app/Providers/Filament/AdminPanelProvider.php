@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -28,6 +29,20 @@ class AdminPanelProvider extends PanelProvider
             ->authGuard('admin')
             ->colors([
                 'primary' => Color::Amber,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('BM管理')
+                    ->icon('heroicon-o-briefcase'),
+
+                NavigationGroup::make()
+                    ->label('账号管理')
+                    ->icon('heroicon-o-users'),
+
+                NavigationGroup::make()
+                    ->label('系统管理')
+                    ->icon('heroicon-o-cog-6-tooth'),
+
             ])
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth('10xl')
